@@ -1,0 +1,23 @@
+{
+  "name": "digital-certs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VinayakTekade/digital-certs.git"
+  },
+  "author": "VinayakTekade",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VinayakTekade/digital-certs/issues"
+  },
+  "homepage": "https://github.com/VinayakTekade/digital-certs#readme",
+  "dependencies": {
+    "crypto-js": "^4.1.1",
+    "express": "^4.18.2"
+  }
+}
