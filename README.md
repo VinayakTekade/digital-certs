@@ -29,7 +29,7 @@ The example application provides two API endpoints:
 ### Encrypt API:
 
 -   URL: POST /encrypt
--   Description: Accepts a JSON payload and encrypts it using AES encryption.
+-   Description: Accepts a JSON payload and encrypts it using AES encryption and signs it. 
 -   Example usage with curl:
 
 ```
@@ -39,7 +39,7 @@ curl --location 'http://localhost:3000/encrypt' --header 'Content-Type: applicat
 ### Decrypt API
 
 -   URL: POST /decrypt
--   Description: Accepts the encrypted data and decrypts it using AES decryption.
+-   Description: Accepts the encrypted data and decrypts it using AES decryption and  verifies it signature.
 -   Example usage with curl:
 
 ```
@@ -50,6 +50,42 @@ curl --location 'http://localhost:3000/decrypt' --header 'Content-Type: applicat
          "encryptedData": "d0e6ea795d535b7f3e5cfc6b163fea2702db510e33d8701d5bced568749712696e75d9b4291d46819a84fa28169b274d"
      }
  }'
+```
+
+# Generate Self-Signed Certificates:
+
+To enhance the security of the encryption and decryption process, we can use digital certificates in the encryptionMiddleware.js file. Digital certificates enable us to establish a secure communication channel between the client and the server, ensuring confidentiality and authenticity of the data.
+
+In this example, we'll use self-signed digital certificates for simplicity. In a production environment, you should obtain valid certificates from a trusted Certificate Authority (CA). For this example, we'll generate self-signed certificates using OpenSSL.
+
+1. Generate a private key
+
+```
+openssl genpkey -algorithm RSA -out privatekey.pem
+```
+
+2. Generate a certificate signing request (CSR)
+
+```
+openssl req -new -key privatekey.pem -out csr.pem
+```
+
+3. Generate a self-signed certificate valid for 1 year
+
+```
+openssl x509 -req -days 365 -in csr.pem -signkey privatekey.pem -out certificate.pem
+```
+
+4. Combine the private key and certificate into a single file (required by Node.js)
+
+```
+cat privatekey.pem certificate.pem > server.pem
+```
+
+5. Remove the intermediate files
+
+```
+rm privatekey.pem certificate.pem csr.pem
 ```
 
 # Contributing
