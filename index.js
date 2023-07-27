@@ -7,7 +7,7 @@ app.use(express.json());
 
 // API to encrypt the request payload before processing
 // The client will send the data in the request body
-// The server will encrypt the data 
+// The server will encrypt the data
 // and sign it using the private key
 app.post("/encrypt", (req, res, next) => {
 	console.log("=====Running /encrypt API======");
@@ -21,12 +21,27 @@ app.post("/encrypt", (req, res, next) => {
 
 app.use("/encrypt", (req, res) => {
 	const signature = sign(req.body);
-	req.headers["x-signature"] = signature;
+	req.headers["Authorization"] =
+		"Signature " +
+		"signatureProviderId=" +
+		signature.signatureProviderId +
+		" signature=" +
+		signature.signature +
+		" signatureAlgorithm=" +
+		signature.signingAlgorithm +
+		" created=" +
+		signature.created +
+		" expires=" +
+		signature.exprires;
+
 	console.log("Headers after signing--->", req.headers);
 
 	res.json({
 		data: req.body,
-		signature: signature,
+		signatureProviderId: signature.signatureProviderId,
+		signatureAlgorithm: signature.signingAlgorithm,
+		created: signature.created,
+		expires: signature.exprires,
 	});
 });
 
@@ -37,8 +52,11 @@ app.use("/encrypt", (req, res) => {
 // and decrypt the data
 app.post("/decrypt", (req, res, next) => {
 	console.log("=====Running /decrypt API======");
-	const isSignatureValid = verify(req.body.data, req.headers["x-signature"]);
-	console.log("Signature from Header ---> ", req.headers["x-signature"]);
+	// Extract the Authorization header from the request
+	const authorizationHeader = req.headers["authorization"];
+	console.log("Authorization Header --->", authorizationHeader);
+	// Verify the signature
+	const isSignatureValid = verify(req.body.data, authorizationHeader);
 	if (isSignatureValid) {
 		console.log("Signature is valid");
 		next();
