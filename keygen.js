@@ -1,3 +1,4 @@
+// Use this file to generate a public/private key pair and a secret key. Then copy these values to the .env file.
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");

@@ -43,13 +43,15 @@ curl --location 'http://localhost:3000/encrypt' --header 'Content-Type: applicat
 -   Example usage with curl:
 
 ```
-curl --location 'http://localhost:3000/decrypt' --header 'Content-Type: application/json' \
- --data '{
-     "encryptedData": {
-         "iv": "97c7807b2451e58d4648cb5c0d3b29c3",
-         "encryptedData": "d0e6ea795d535b7f3e5cfc6b163fea2702db510e33d8701d5bced568749712696e75d9b4291d46819a84fa28169b274d"
-     }
- }'
+curl --location 'http://localhost:4000/decrypt' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Signature signatureProviderId=test-signature-provider signature=IB5Y1LPAhlUttPVCZIIjQ5432SzWobO0ofqXwJxEpD9BS7nM7hvNxDBYnGd0Qv+bUH9Pe5WUh4aJVfhix9OS+TYfOoLuQij5EzsiqE1rBfkuF9GQWooRri6l2QfWhsiVTb9Rh841LXbWKpQIuv2RwRDeTUlSqEQKsSGzBKHbFGBD6JZk4TIklSWTLsJqtDnx5kb0wKipl3+kDyyINS9d68f8/mXyGTHP7Gc6ISwOVYLTJlFucvWiaQKquYyy/AG5ROGATLKTv5JXxz/viqFDZG0KZyQjUEgYklILRwO1UtYNK3a7j62sy6frXtVxCFuIfv4j+/9S/PJUwgrQ1a69tQ== signatureAlgorithm=SHA256 created=1690449311783 expires=1690452911783' \
+--data '{
+    "data": {
+        "iv": "253d95d839050346d35f755cf4f6c5c1",
+        "encryptedData": "e17d82335e67bce4e3bbc48699821d041d361c9b1de5631eac513a7fb9c829d4"
+    }
+}'
 ```
 
 # Generate Self-Signed Certificates:

@@ -33,7 +33,9 @@ app.use("/encrypt", (req, res) => {
 		" created=" +
 		signature.created +
 		" expires=" +
-		signature.exprires;
+		signature.exprires +
+		" keyId=" +
+		signature.keyId;
 
 	console.log("Headers after signing--->", req.headers);
 
@@ -43,6 +45,7 @@ app.use("/encrypt", (req, res) => {
 		signatureAlgorithm: signature.signingAlgorithm,
 		created: signature.created,
 		expires: signature.exprires,
+		keyId: signature.keyId
 	});
 });
 
@@ -84,17 +87,17 @@ app.listen(port, () => {
 });
 
 // Curl Command for Testing the Encrypt API
-// curl --location 'http://localhost:3000/encrypt' \
+// curl --location 'http://localhost:4000/encrypt' \
 // --header 'Content-Type: application/json' \
 // --data '{ "name": "John Doe", "age": 30 }'
 
 // Curl Command for Testing the Decrypt API
-// curl --location 'http://localhost:3000/decrypt' \
+// curl --location 'http://localhost:4000/decrypt' \
 // --header 'Content-Type: application/json' \
-// --header 'x-signature: VgKe4ZRR8S0M8SpqLq/BEq2O7RwDK/rnPeN1L0pHjmYW/LpAWvW/tJiGW8Z9RHypDtQ3HIPpXwhmqVlVF/XTNfBrCOVpWhywPxs2PnL3g4lt550wXZ/qkqHWm9blkLXwLl1CmkdCk69708EyPCVxBjL9K/eMxl2hQlcF7L3uJvlmVLXhhRRQCVIqFOhCEd6k8hLToiuakUP1s/cEfievwGMdL4YnjdT+Pm+Ndj/CtNGrw96WS4umaxrzeWfhhQSwQFiUtLJ9Zr/67jHMo0ZnaudBmmcuXFqiBhsoV0LwQ/NJKkQbafeGG5XQlqQTosf5hMwu0PWoCUL5d0TlaASqtMqZ3lTkPuxG7Cg/wCFHTHKVOSGO2JVX4xlyKYGy68oYATFlWxT0353j5/a3CdLLMYSSz8XmmiEWHO8eZIyWfRTV1lnx5+haV3CX78YtDkcSJB2I161J42Z3Ey1YvNCW9vhxKRQ1VNf7s0CpNvNx/Ut+4IiMaYgew5MT2CgIjeMj+O5p0lcbdotvPT8jTFbvxaGxtnmlJf34G75IgAc66pQBdJ68htuhutIZWqCQhrHDR6LsgS8eJ9q1y6v7alo84cO0biFaA9+77IbeB1gMoqZiJxvfuux91q57LMCAVNkVyI3QpYvVYH0w3xjyfClw2Jx5TBEqD+W2WQRFzT7YZUs=' \
+// --header 'Authorization: Signature signatureProviderId=test-signature-provider signature=IB5Y1LPAhlUttPVCZIIjQ5432SzWobO0ofqXwJxEpD9BS7nM7hvNxDBYnGd0Qv+bUH9Pe5WUh4aJVfhix9OS+TYfOoLuQij5EzsiqE1rBfkuF9GQWooRri6l2QfWhsiVTb9Rh841LXbWKpQIuv2RwRDeTUlSqEQKsSGzBKHbFGBD6JZk4TIklSWTLsJqtDnx5kb0wKipl3+kDyyINS9d68f8/mXyGTHP7Gc6ISwOVYLTJlFucvWiaQKquYyy/AG5ROGATLKTv5JXxz/viqFDZG0KZyQjUEgYklILRwO1UtYNK3a7j62sy6frXtVxCFuIfv4j+/9S/PJUwgrQ1a69tQ== signatureAlgorithm=SHA256 created=1690449311783 expires=1690452911783' \
 // --data '{
 //     "data": {
-//         "iv": "d9b40661c57844dd4f62b1284187d056",
-//         "encryptedData": "6e2e764986dbb515a753839b6da07437897c89d5ae42235c390a1e75ca6e4438"
+//         "iv": "253d95d839050346d35f755cf4f6c5c1",
+//         "encryptedData": "e17d82335e67bce4e3bbc48699821d041d361c9b1de5631eac513a7fb9c829d4"
 //     }
 // }'
