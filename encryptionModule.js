@@ -1,23 +1,5 @@
 const crypto = require("crypto");
 
-// Generate a random secret key
-function generateSecretKey(length) {
-	const charset =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	let secretKey = "";
-
-	// Generate a random string of the specified length
-	for (let i = 0; i < length; i++) {
-		const randomIndex = Math.floor(Math.random() * charset.length);
-		secretKey += charset[randomIndex];
-	}
-
-	return secretKey;
-}
-
-const secretKeyLength = 32; // You can adjust the length as needed
-const secretKey = generateSecretKey(secretKeyLength); // Replace with your desired fixed secret key if needed
-
 
 // Encrypt the data passed in using AES-256-CBC algorithm
 // Sample input: { "name": "John Doe", "age": 30 }
@@ -34,7 +16,7 @@ function encrypt(data) {
 	// Create a new cipher using the secret key
 	const cipher = crypto.createCipheriv(
 		"aes-256-cbc",
-		Buffer.from(secretKey),
+		Buffer.from(process.env.SECRET_KEY),
 		iv
 	);
 
@@ -61,7 +43,7 @@ function decrypt(encryptedData) {
 	// Create a decipher using the secret key and the IV we generated earlier
 	const decipher = crypto.createDecipheriv(
 		"aes-256-cbc",
-		Buffer.from(secretKey),
+		Buffer.from(process.env.SECRET_KEY),
 		Buffer.from(encryptedData.iv, "hex")
 	);
 

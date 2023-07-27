@@ -4,6 +4,7 @@ const { sign, verify } = require("./signModule");
 
 const app = express();
 app.use(express.json());
+require("dotenv").config();
 
 // API to encrypt the request payload before processing
 // The client will send the data in the request body
@@ -61,6 +62,7 @@ app.post("/decrypt", (req, res, next) => {
 		console.log("Signature is valid");
 		next();
 	} else {
+		res.status(401);
 		res.json({
 			message: "Invalid Signature",
 		});
@@ -76,7 +78,7 @@ app.use("/decrypt", (req, res) => {
 });
 
 // Start the server
-const port = 3000; // Replace with your desired port number
+const port = 4000; // Replace with your desired port number
 app.listen(port, () => {
 	console.log(`Server running on port ${port}`);
 });

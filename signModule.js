@@ -1,9 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-
 const certificatePath = path.resolve(__dirname, "server.pem"); // Path to the combined private key and certificate
-
 // Load the certificate and extract the public and private keys
 const certificate = fs.readFileSync(certificatePath);
 const publicKey = crypto.createPublicKey(certificate);
@@ -35,7 +33,7 @@ function verify(data, authHeader) {
 	//extract expiry from the Authorization header
 	const expires = authHeader.split(" ")[5].split("=")[1];
 	console.log("Expires from Authorization Header ---> ", expires);
-	if (new Date().getTime()> expires) {
+	if (new Date().getTime() > expires) {
 		console.log("Signature has expired");
 		return false;
 	}

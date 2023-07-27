@@ -29,7 +29,7 @@ The example application provides two API endpoints:
 ### Encrypt API:
 
 -   URL: POST /encrypt
--   Description: Accepts a JSON payload and encrypts it using AES encryption and signs it. 
+-   Description: Accepts a JSON payload and encrypts it using AES encryption and signs it.
 -   Example usage with curl:
 
 ```
@@ -39,7 +39,7 @@ curl --location 'http://localhost:3000/encrypt' --header 'Content-Type: applicat
 ### Decrypt API
 
 -   URL: POST /decrypt
--   Description: Accepts the encrypted data and decrypts it using AES decryption and  verifies it signature.
+-   Description: Accepts the encrypted data and decrypts it using AES decryption and verifies it signature.
 -   Example usage with curl:
 
 ```
@@ -86,6 +86,12 @@ cat privatekey.pem certificate.pem > server.pem
 
 ```
 rm privatekey.pem certificate.pem csr.pem
+```
+
+# Environment Variables
+
+```
+SECRET_KEY=<YOUR_ENCRYPTION_SECRET_KEY_GOES_HERE>
 ```
 
 # Contributing
