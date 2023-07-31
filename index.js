@@ -1,6 +1,7 @@
 const express = require("express");
 const { encrypt, decrypt } = require("./helper_modules/encryptionModule");
 const { sign, verify } = require("./helper_modules/signModule");
+const { createDigest } = require("./helper_modules/hashingModule");
 
 const app = express();
 app.use(express.json());
@@ -27,6 +28,8 @@ app.use("/encrypt", (req, res) => {
 		"SHA256",
 		"base64"
 	);
+	console.log("req.body --->", req.body);
+	const digest = createDigest(req.body, "SHA256", "hex");
 	req.headers["Authorization"] =
 		"Signature" +
 		" signatureProviderId=" +
@@ -42,7 +45,9 @@ app.use("/encrypt", (req, res) => {
 		" expires=" +
 		signature.exprires +
 		" keyId=" +
-		signature.keyId;
+		signature.keyId +
+		" digest=" +
+		digest.digest;
 
 	console.log("Headers after signing--->", req.headers);
 
