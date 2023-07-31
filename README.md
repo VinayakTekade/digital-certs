@@ -21,39 +21,6 @@ cd digital-certs.git
 ```
 npm install
 ```
-
-## Usage
-
-The example application provides two API endpoints:
-
-### Encrypt API:
-
--   URL: POST /encrypt
--   Description: Accepts a JSON payload and encrypts it using AES encryption and signs it.
--   Example usage with curl:
-
-```
-curl --location 'http://localhost:3000/encrypt' --header 'Content-Type: application/json' --data '{ "name": "John Doe", "age": 30 }'
-```
-
-### Decrypt API
-
--   URL: POST /decrypt
--   Description: Accepts the encrypted data and decrypts it using AES decryption and verifies it signature.
--   Example usage with curl:
-
-```
-curl --location 'http://localhost:4000/decrypt' \
---header 'Content-Type: application/json' \
---header 'Authorization: Signature signatureProviderId=test-signature-provider signature=IB5Y1LPAhlUttPVCZIIjQ5432SzWobO0ofqXwJxEpD9BS7nM7hvNxDBYnGd0Qv+bUH9Pe5WUh4aJVfhix9OS+TYfOoLuQij5EzsiqE1rBfkuF9GQWooRri6l2QfWhsiVTb9Rh841LXbWKpQIuv2RwRDeTUlSqEQKsSGzBKHbFGBD6JZk4TIklSWTLsJqtDnx5kb0wKipl3+kDyyINS9d68f8/mXyGTHP7Gc6ISwOVYLTJlFucvWiaQKquYyy/AG5ROGATLKTv5JXxz/viqFDZG0KZyQjUEgYklILRwO1UtYNK3a7j62sy6frXtVxCFuIfv4j+/9S/PJUwgrQ1a69tQ== signatureAlgorithm=SHA256 created=1690449311783 expires=1690452911783' \
---data '{
-    "data": {
-        "iv": "253d95d839050346d35f755cf4f6c5c1",
-        "encryptedData": "e17d82335e67bce4e3bbc48699821d041d361c9b1de5631eac513a7fb9c829d4"
-    }
-}'
-```
-
 # Generate Self-Signed Certificates:
 
 To enhance the security of the encryption and decryption process, we can use digital certificates in the encryptionMiddleware.js file. Digital certificates enable us to establish a secure communication channel between the client and the server, ensuring confidentiality and authenticity of the data.
@@ -91,10 +58,45 @@ rm privatekey.pem certificate.pem csr.pem
 ```
 
 # Environment Variables
-
+Go to utils directory and run keygen.js to get public key, private key and secret key. You can copy these values in to environment variables. The environment variables are defined in the following way
 ```
 SECRET_KEY=<YOUR_ENCRYPTION_SECRET_KEY_GOES_HERE>
+PUBLIC_KEY=<YOUR_SIGNING_PUBLIC_KEY_GOES_HERE>
+PRIVATE_KEY=<YOUR_SIGNING_PRIVATE_KEY_GOES_HERE>
+SIGNATURE_PROVIDER_ID=<YOUR_YOUR_SIGNATURE_PROVIDER_ID_GOES_HERE>
 ```
+## Usage
+
+The example application provides two API endpoints:
+
+### Encrypt API:
+
+-   URL: POST /encrypt
+-   Description: Accepts a JSON payload and encrypts it using AES encryption and signs it.
+-   Example usage with curl:
+
+```
+curl --location 'http://localhost:3000/encrypt' --header 'Content-Type: application/json' --data '{ "name": "John Doe", "age": 30 }'
+```
+
+### Decrypt API
+
+-   URL: POST /decrypt
+-   Description: Accepts the encrypted data and decrypts it using AES decryption and verifies it signature.
+-   Example usage with curl:
+
+```
+curl --location 'http://localhost:4000/decrypt' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Signature signatureProviderId=test-signature-provider signature=IB5Y1LPAhlUttPVCZIIjQ5432SzWobO0ofqXwJxEpD9BS7nM7hvNxDBYnGd0Qv+bUH9Pe5WUh4aJVfhix9OS+TYfOoLuQij5EzsiqE1rBfkuF9GQWooRri6l2QfWhsiVTb9Rh841LXbWKpQIuv2RwRDeTUlSqEQKsSGzBKHbFGBD6JZk4TIklSWTLsJqtDnx5kb0wKipl3+kDyyINS9d68f8/mXyGTHP7Gc6ISwOVYLTJlFucvWiaQKquYyy/AG5ROGATLKTv5JXxz/viqFDZG0KZyQjUEgYklILRwO1UtYNK3a7j62sy6frXtVxCFuIfv4j+/9S/PJUwgrQ1a69tQ== signatureAlgorithm=SHA256 created=1690449311783 expires=1690452911783' \
+--data '{
+    "data": {
+        "iv": "253d95d839050346d35f755cf4f6c5c1",
+        "encryptedData": "e17d82335e67bce4e3bbc48699821d041d361c9b1de5631eac513a7fb9c829d4"
+    }
+}'
+```
+
 
 # Contributing
 

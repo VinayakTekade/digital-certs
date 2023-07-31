@@ -13,7 +13,6 @@ require("dotenv").config();
 // and sign it using the private key
 app.post("/encrypt", (req, res, next) => {
 	console.log("=====Running /encrypt API======");
-	console.log("Headers initially --->", req.headers);
 	// Assuming the request payload is in JSON format
 	const data = req.body;
 	const encryptedData = encrypt(data, "aes-256-cbc", "utf8", "hex");
@@ -28,7 +27,6 @@ app.use("/encrypt", (req, res) => {
 		"SHA256",
 		"base64"
 	);
-	console.log("req.body --->", req.body);
 	const digest = createDigest(req.body, "SHA256", "hex");
 	req.headers["Authorization"] =
 		"Signature" +
@@ -49,15 +47,10 @@ app.use("/encrypt", (req, res) => {
 		" digest=" +
 		digest.digest;
 
-	console.log("Headers after signing--->", req.headers);
+	console.log("Authorization Header --->", req.headers["Authorization"]);
 
 	res.json({
 		data: req.body,
-		signatureProviderId: signature.signatureProviderId,
-		signatureAlgorithm: signature.signingAlgorithm,
-		created: signature.created,
-		expires: signature.exprires,
-		keyId: signature.keyId,
 	});
 });
 
@@ -100,9 +93,7 @@ app.use("/decrypt", (req, res) => {
 			message: "Data is missing",
 		});
 	}
-	console.log("Data from body --->", data);
 	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
-	console.log("Decrypted Data --->", decryptedData);
 	res.json(decryptedData);
 });
 
