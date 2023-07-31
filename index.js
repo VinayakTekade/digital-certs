@@ -21,13 +21,20 @@ app.post("/encrypt", (req, res, next) => {
 });
 
 app.use("/encrypt", (req, res) => {
-	const signature = sign(req.body);
+	const signature = sign(
+		req.body,
+		process.env.SIGNATURE_PROVIDER_ID,
+		"SHA256",
+		"base64"
+	);
 	req.headers["Authorization"] =
-		"Signature " +
-		"signatureProviderId=" +
+		"Signature" +
+		" signatureProviderId=" +
 		signature.signatureProviderId +
 		" signature=" +
 		signature.signature +
+		" signatureEncoding=" +
+		signature.signatureEncoding +
 		" signatureAlgorithm=" +
 		signature.signingAlgorithm +
 		" created=" +
@@ -45,7 +52,7 @@ app.use("/encrypt", (req, res) => {
 		signatureAlgorithm: signature.signingAlgorithm,
 		created: signature.created,
 		expires: signature.exprires,
-		keyId: signature.keyId
+		keyId: signature.keyId,
 	});
 });
 

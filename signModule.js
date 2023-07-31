@@ -1,20 +1,13 @@
 const crypto = require("crypto");
-const fs = require("fs");
-const path = require("path");
+
 const uuid = require("uuid");
 
-// Load the certificate and extract the public and private keys
-const certificatePath = path.resolve(__dirname, "server.pem"); // Path to the combined private key and certificate
-const certificate = fs.readFileSync(certificatePath);
-const publicKey = crypto.createPublicKey(certificate);
-const privateKey = crypto.createPrivateKey(certificate);
-
-function sign(data) {
+function sign(data, signatureProviderId, signingAlgorithm, signatureEncoding) {
 	//sign the encrypted data
-	const sign = crypto.createSign("SHA256");
+	const sign = crypto.createSign(signingAlgorithm);
 	sign.update(JSON.stringify(data));
 	sign.end();
-	const signature = sign.sign(privateKey, "base64");
+	const signature = sign.sign(process.env.PRIVATE_KEY, signatureEncoding);
 	//Generate unique ID for each signature using UUID
 	const keyId = uuid.v4();
 	//Set the time at which the signature was created
@@ -24,10 +17,8 @@ function sign(data) {
 	const exprires = new Date(created).getTime() + 1 * 60 * 60 * 1000; // 1 hour
 	console.log("Signature expires at --->", exprires);
 	//Set the signature provider ID
-	const signatureProviderId = "test-signature-provider";
 	console.log("Signature provider ID --->", signatureProviderId);
 	//Set the signing algorithm
-	const signingAlgorithm = "SHA256";
 	console.log("Signing algorithm --->", signingAlgorithm);
 
 	return {
@@ -37,12 +28,13 @@ function sign(data) {
 		exprires,
 		signatureProviderId,
 		signingAlgorithm,
+		signatureEncoding,
 	};
 }
 
 function verify(data, authHeader) {
-	//extract expiry from the Authorization header
-	const expires = authHeader.split(" ")[5].split("=")[1];
+	//extract expiry from the Authorization header and check if the signature has expired
+	const expires = authHeader.split(" ")[6].split("=")[1];
 	console.log("Expires from Authorization Header ---> ", expires);
 	if (new Date().getTime() > expires) {
 		console.log("Signature has expired");
@@ -51,11 +43,27 @@ function verify(data, authHeader) {
 	//extract the signature from the Authorization header
 	const signature = authHeader.split(" ")[2].split("=")[1];
 	console.log("Signature from Authorization Header ---> ", signature);
+	//extract the signing algorithm from the Authorization header
+	const signingAlgorithm = authHeader.split(" ")[4].split("=")[1];
+	console.log(
+		"Signing algorithm from Authorization Header ---> ",
+		signingAlgorithm
+	);
+	//extract the signature encoding from the Authorization header
+	const signatureEncoding = authHeader.split(" ")[3].split("=")[1];
+	console.log(
+		"Signature encoding from Authorization Header ---> ",
+		signatureEncoding
+	);
 	//verify the signature
-	const verify = crypto.createVerify("SHA256");
+	const verify = crypto.createVerify(signingAlgorithm);
 	verify.update(JSON.stringify(data));
 	verify.end();
-	const isSignatureValid = verify.verify(publicKey, signature, "base64");
+	const isSignatureValid = verify.verify(
+		process.env.PUBLIC_KEY,
+		signature,
+		signatureEncoding
+	);
 	return isSignatureValid;
 }
 
