@@ -1,6 +1,6 @@
 const express = require("express");
-const { encrypt, decrypt } = require("./encryptionModule");
-const { sign, verify } = require("./signModule");
+const { encrypt, decrypt } = require("./helper_modules/encryptionModule");
+const { sign, verify } = require("./helper_modules/signModule");
 
 const app = express();
 app.use(express.json());
@@ -15,7 +15,7 @@ app.post("/encrypt", (req, res, next) => {
 	console.log("Headers initially --->", req.headers);
 	// Assuming the request payload is in JSON format
 	const data = req.body;
-	const encryptedData = encrypt(data);
+	const encryptedData = encrypt(data, "aes-256-cbc", "utf8", "hex");
 	req.body = encryptedData;
 	next();
 });
@@ -82,7 +82,7 @@ app.post("/decrypt", (req, res, next) => {
 app.use("/decrypt", (req, res) => {
 	const { data } = req.body;
 	console.log("Data from body --->", data);
-	const decryptedData = decrypt(data);
+	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
 	console.log("Decrypted Data --->", decryptedData);
 	res.json(decryptedData);
 });
