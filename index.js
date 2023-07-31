@@ -66,6 +66,13 @@ app.post("/decrypt", (req, res, next) => {
 	// Extract the Authorization header from the request
 	const authorizationHeader = req.headers["authorization"];
 	console.log("Authorization Header --->", authorizationHeader);
+	// Check if the Authorization header is present
+	if (!authorizationHeader) {
+		res.status(401);
+		res.json({
+			message: "Authorization Header is missing",
+		});
+	}
 	// Verify the signature
 	const isSignatureValid = verify(req.body.data, authorizationHeader);
 	if (isSignatureValid) {
@@ -81,6 +88,13 @@ app.post("/decrypt", (req, res, next) => {
 
 app.use("/decrypt", (req, res) => {
 	const { data } = req.body;
+	// Check if the data is present
+	if (!data) {
+		res.status(400);
+		res.json({
+			message: "Data is missing",
+		});
+	}
 	console.log("Data from body --->", data);
 	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
 	console.log("Decrypted Data --->", decryptedData);
