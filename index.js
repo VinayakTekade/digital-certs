@@ -1,5 +1,10 @@
 const express = require("express");
-const { encrypt, decrypt } = require("./helper_modules/encryptionModule");
+const {
+	encrypt,
+	decrypt,
+	encryptUsingPublicKey,
+	decryptUsingPrivateKey,
+} = require("./helper_modules/encryptionModule");
 const { sign, verify } = require("./helper_modules/signModule");
 const { createDigest } = require("./helper_modules/hashingModule");
 
@@ -48,6 +53,45 @@ app.post("/decrypt", (req, res) => {
 	// Decrypt the data
 	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
 	res.json(decryptedData);
+});
+
+app.post("/encryptUsingPublicKey", (req, res) => {
+	console.log("=====Running /encryptUsingPublicKey API======");
+	// Assuming the request payload is in JSON format
+	const data = req.body;
+	// Check if the data is present
+	if (!data) {
+		res.status(400);
+		res.json({
+			message: "Data is missing",
+			success: false,
+		});
+	}
+	// Encrypt the data
+	const encryptedData = encryptUsingPublicKey(data, "utf8", "base64");
+	req.body = encryptedData;
+	res.json({
+		data: encryptedData,
+	});
+});
+
+app.post("/decryptUsingPrivateKey", (req, res) => {
+	console.log("=====Running /decryptUsingPrivateKey API======");
+	// Assuming the request payload is in JSON format
+	const data = req.body.data;
+	// Check if the data is present
+	if (!data) {
+		res.status(400);
+		res.json({
+			message: "Data is missing",
+			success: false,
+		});
+	}
+	// Decrypt the data
+	const decryptedData = decryptUsingPrivateKey(data, "base64", "utf8");
+	res.json({
+		data: decryptedData,
+	});
 });
 
 // API to sign the request payload before processing
