@@ -15,19 +15,59 @@ app.post("/encrypt", (req, res, next) => {
 	console.log("=====Running /encrypt API======");
 	// Assuming the request payload is in JSON format
 	const data = req.body;
+	// Check if the data is present
+	if (!data) {
+		res.status(400);
+		res.json({
+			message: "Data is missing",
+			success: false,
+		});
+	}
+	// Encrypt the data
 	const encryptedData = encrypt(data, "aes-256-cbc", "utf8", "hex");
 	req.body = encryptedData;
-	next();
+	res.json({
+		data: encryptedData,
+	});
 });
 
-app.use("/encrypt", (req, res) => {
+// API to decrypt the request payload before processing
+// The client will send the encrypted data in the request body
+// and the signature in the request header
+// The server will verify the signature using the public key
+// and decrypt the data
+app.post("/decrypt", (req, res) => {
+	const { data } = req.body;
+	// Check if the data is present
+	if (!data) {
+		res.status(400);
+		res.json({
+			message: "Data is missing",
+		});
+	}
+	// Decrypt the data
+	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
+	res.json(decryptedData);
+});
+
+// API to sign the request payload before processing
+// The client will send the data in the request body
+// The server will sign the data using the private key
+// and send the signature in the request header
+app.post("/sign", (req, res) => {
+	console.log("=====Running /sign API======");
+	// sign the request body
 	const signature = sign(
 		req.body,
 		process.env.SIGNATURE_PROVIDER_ID,
 		"SHA256",
 		"base64"
 	);
+	console.log("Signature --->", signature);
+	// Generate the digest of the request body
 	const digest = createDigest(req.body, "SHA256", "hex");
+
+	// Set Authorization header with the signature, digest and other details
 	req.headers["Authorization"] =
 		"Signature" +
 		" signatureProviderId=" +
@@ -54,13 +94,12 @@ app.use("/encrypt", (req, res) => {
 	});
 });
 
-// API to decrypt the request payload before processing
-// The client will send the encrypted data in the request body
+// API to verify the signature of the request payload before processing
+// The client will send the data in the request body
 // and the signature in the request header
 // The server will verify the signature using the public key
-// and decrypt the data
-app.post("/decrypt", (req, res, next) => {
-	console.log("=====Running /decrypt API======");
+app.post("/verify", (req, res, next) => {
+	console.log("=====Running /verify API======");
 	// Extract the Authorization header from the request
 	const authorizationHeader = req.headers["authorization"];
 	console.log("Authorization Header --->", authorizationHeader);
@@ -69,32 +108,24 @@ app.post("/decrypt", (req, res, next) => {
 		res.status(401);
 		res.json({
 			message: "Authorization Header is missing",
+			success: false,
 		});
 	}
 	// Verify the signature
-	const isSignatureValid = verify(req.body.data, authorizationHeader);
+	const isSignatureValid = verify(req.body, authorizationHeader);
 	if (isSignatureValid) {
 		console.log("Signature is valid");
-		next();
+		res.json({
+			message: "Signature is valid",
+			success: true,
+		});
 	} else {
 		res.status(401);
 		res.json({
 			message: "Invalid Signature",
+			success: false,
 		});
 	}
-});
-
-app.use("/decrypt", (req, res) => {
-	const { data } = req.body;
-	// Check if the data is present
-	if (!data) {
-		res.status(400);
-		res.json({
-			message: "Data is missing",
-		});
-	}
-	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
-	res.json(decryptedData);
 });
 
 // Start the server

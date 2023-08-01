@@ -57,6 +57,7 @@ function decrypt(encryptedData, encryptionAlgorithm, intputEncoding, outputEncod
 	return JSON.parse(decrypted);
 }
 
+
 module.exports = {
 	encrypt,
 	decrypt,
