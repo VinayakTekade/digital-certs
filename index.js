@@ -15,7 +15,6 @@ require("dotenv").config();
 // API to encrypt the request payload before processing
 // The client will send the data in the request body
 // The server will encrypt the data
-// and sign it using the private key
 app.post("/encrypt", (req, res, next) => {
 	console.log("=====Running /encrypt API======");
 	// Assuming the request payload is in JSON format
@@ -38,8 +37,6 @@ app.post("/encrypt", (req, res, next) => {
 
 // API to decrypt the request payload before processing
 // The client will send the encrypted data in the request body
-// and the signature in the request header
-// The server will verify the signature using the public key
 // and decrypt the data
 app.post("/decrypt", (req, res) => {
 	const { data } = req.body;
@@ -54,6 +51,10 @@ app.post("/decrypt", (req, res) => {
 	const decryptedData = decrypt(data, "aes-256-cbc", "hex", "utf8");
 	res.json(decryptedData);
 });
+
+// API to sign the request payload before processing
+// The client will send the data in the request body
+// THe server will encrypt the data using the public key
 
 app.post("/encryptUsingPublicKey", (req, res) => {
 	console.log("=====Running /encryptUsingPublicKey API======");
@@ -75,6 +76,9 @@ app.post("/encryptUsingPublicKey", (req, res) => {
 	});
 });
 
+// API to decrypt the request payload before processing
+// The client will send the encrypted data in the request body
+// and decrypt the data using the private key
 app.post("/decryptUsingPrivateKey", (req, res) => {
 	console.log("=====Running /decryptUsingPrivateKey API======");
 	// Assuming the request payload is in JSON format
@@ -192,4 +196,30 @@ app.listen(port, () => {
 //         "iv": "253d95d839050346d35f755cf4f6c5c1",
 //         "encryptedData": "e17d82335e67bce4e3bbc48699821d041d361c9b1de5631eac513a7fb9c829d4"
 //     }
+// }'
+
+// Curl Command for Testing the Encrypt Using Public Key API
+// curl --location 'http://localhost:4000/encryptUsingPublicKey' \
+// --header 'Content-Type: application/json' \
+// --data '{ "name": "John Doe", "age": 30 }'
+
+// Curl Command for Testing the Decrypt Using Private Key API
+// curl --location 'http://localhost:4000/decryptUsingPrivateKey' \
+// --header 'Content-Type: application/json' \
+// --data '{
+//     "data": "Q8Mkp/U3eUIWfAvnrCZWBqtXRiIcbATqCuSGzW2seW9CA2ju1kvQWHnXFEc5/cFAzXCWW4jhkZVuQzLDAzV0XXekcyI5RU261Nswkl8PZ8VADuZ61IqfgEePckW4mCrbFc+CRGkVwFwG1GB5nwTdtqGGL4PsQex07mqZPbrW52MCyhrz3Uopq3qY/QfADczQ9efqUhozN3lXcc5IZdgC6JZH6696n5JTdZWx6TfR2cMXN2Im40SeWZ0jrFZ1nxh3qWd3iooUfMVhre4cdHzs41pXmLNzVK4fKArFD1DmP7K7KpwxQP3cs5eT35i72vsdris+CbjiKLs8d14L7jCFjQ=="
+// }'
+
+// Curl Command for Testing the Sign API
+// curl --location 'http://localhost:4000/sign' \
+// --header 'Content-Type: application/json' \
+// --data '{ "name": "John Doe", "age": 30 }'
+
+// Curl Command for Testing the Verify API
+// curl --location 'http://localhost:4000/verify' \
+// --header 'Content-Type: application/json' \
+// --header 'Authorization: Signature signatureProviderId=test-signature-provider signature=NDnIHyO0Q0CJtDB9TZSanJb7hhlXNmAjliadA6pkBVqYrAEMTmslj+2iVMAc7dBqvgcege0wkzyNxvgRUmz0tPJIMcLDId4G7RozSNdwFC5+hMjwPK93yulDW8Nyvn4uN+UsC6hN/Ayi0UHMLqDcRoDmzzrQw9RlxAHykuPieq9fFOPbSbeAh+N9/S+1HQZd37WbKejgIhjS5vRkj7+jlmhumPE/eMIa/DKwPA2zhjwxKd7XF1kZ7NWbI+A79tT+YCGAr1LbeOedMh36x2VDBrRp1+vjWUo2G5MHnWDHJMwiC0j/4WxATC0GJiCI8JxtZEwKmF1OKLlLsksYOm7POQ== signatureEncoding=base64 signatureAlgorithm=SHA256 created=1690865162817 expires=1690868762817 keyId=af34cb4c-1a00-4e46-baf7-54ec9c23fab4 digest=ebc3210d859a1e9df6693af750bdf0cbcd3934abd34fe25942519678caafb7af' \
+// --data '{
+//     "name": "John Doe",
+//     "age": 30
 // }'
